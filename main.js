@@ -1,6 +1,58 @@
 //请在开发中添加InputList，此为订阅文件名，用于指定文件名才能使用本插件，设置标志
 //为SUB_FNAMES
 //singbox 插件编写
+
+const Config = async () => {
+  const plugin_config = {
+    "id": Plugin.id ?? "plugin-skrapp-ss",
+    "name": "skrapp",
+    "version": "v1.0.0",
+    "description": "skrapp的js版本的shadowsocks",
+    "type": "Http",
+    "url": "https://lucky.870469218.workers.dev/",
+    "path": Plugin.path ?? "data/plugins/plugin-skrapp-ss.js",
+    "triggers": [
+      "on::manual",
+      "on::subscribe"
+    ],
+    "menus": {},
+    "context": {
+      "profiles": {},
+      "subscriptions": {},
+      "rulesets": {},
+      "plugins": {},
+      "scheduledtasks": {}
+    },
+    "status": 0,
+    "configuration": [
+      {
+        "id": Plugins.sampleID(),
+        "title": "订阅文件名合集",
+        "description": "用户将本地添加的订阅文件名输入到插件里",
+        "key": "SUB_FNAMES",
+        "component": "InputList",
+        "value": [],
+        "options": []
+      },
+      {
+        "id": Plugins.sampleID(),
+        "title": "随机串长度",
+        "description": "自定义随机串长度",
+        "key": "RAND_LEN",
+        "component": "Input",
+        "value": "6",
+        "options": []
+      }
+    ],
+    "disabled": false,
+    "install": false,
+    "installed": false
+  }
+  //注入配置文件
+  await Plugins.usePluginsStore().editPlugin(Plugin.id, plugin_config);
+  await Plugins.WindowReloadApp();
+  return 0
+}
 //随机字符串生成
 function randStr(length) {
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'; 
@@ -19,9 +71,7 @@ function uint8ArrayToHexString(uint8Array) {
   for (let i = 0; i < Object.keys(uint8Array).length; i++) {
     const hexByte = uint8Array[i].toString(16).padStart(2, '0');
     hexString += hexByte;
-    // console.log(hexString)
   }
-  // console.log(hexString)
   return hexString;
 }
 //解密aes长度为256的密文
@@ -41,7 +91,7 @@ async function decrypt(ciphertext, key, iv){
   )
   
   const i = new Uint8Array(decrypted);
-  // console.log(i)
+
   return i
 }
 function hexStringToUint8Array(hexString) {
@@ -83,7 +133,7 @@ const hexToSbLink = async (status, body) => {
   // 检查 HTTP 状态
   if (status == 200) {
     const hexString = await body.trim();
-    // console.log(hexString)
+
     //16进制转Uint8Array 类型的字节数组
     const a = hexStringToUint8Array(hexString);
     const key = hexStringToUint8Array(dHex);
@@ -92,7 +142,7 @@ const hexToSbLink = async (status, body) => {
     const decryptedUint8Array = await decrypt(a, key, iv)
     const decryptedText = new TextDecoder('utf-8').decode(decryptedUint8Array);
     const jsonObject = JSON.parse(decryptedText);
-    // console.log(jsonObject)
+
     let r_sb = []
     jsonObject.data.forEach(item => {
       let ssTosb = {}
@@ -137,7 +187,6 @@ const onRun = async () => {
 //指定文件更新订阅
 const onSubscribe = async (proxies, subscription) => {
   if (!(await checkFileName())) return
-  // console.log((await checkSubFileInPath(Plugin.SUB_FNAMES, subscription.path)))
   if ((await checkSubFileInPath(Plugin.SUB_FNAMES, subscription.path))) {
     console.log("r_sb")
     const { status, body } = await requestsData()
@@ -145,13 +194,4 @@ const onSubscribe = async (proxies, subscription) => {
     console.log("恭喜！订阅成功！")
     return r_sb;
   }else return proxies;
-  // if (subscription.path.includes(Plugin.SUB_FNAME)) {
-  //   console.log("r_sb")
-  //   const { status, body } = await requestsData()
-  //   const r_sb = await hexToSbLink(status, body)
-  //   return r_sb;
-  // }else{
-  //   //如果不是匹配的订阅文件，则返回默认订阅数据
-  //   return proxies;
-  // }
 };
