@@ -9,7 +9,7 @@ const Config = async () => {
     "version": "v1.0.0",
     "description": "skrapp的js版本的shadowsocks",
     "type": "Http",
-    "url": "https://lucky.870469218.workers.dev/",
+    "url": "https://raw.githubusercontent.com/Daniel7934/skrapp/refs/heads/main/main.js",
     "path": Plugin.path ?? "data/plugins/plugin-skrapp-ss.js",
     "triggers": [
       "on::manual",
