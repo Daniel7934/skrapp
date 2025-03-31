@@ -2,6 +2,7 @@
 //为SUB_FNAMES
 //singbox 插件编写
 
+// singbox内置配置文件
 const Config = async () => {
   const plugin_config = {
     "id": Plugin.id ?? "plugin-skrapp-ss",
